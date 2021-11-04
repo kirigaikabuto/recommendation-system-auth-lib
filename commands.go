@@ -16,3 +16,34 @@ type ListScoreCommand struct {
 func (cmd *ListScoreCommand) Exec(svc interface{}) (interface{}, error) {
 	return svc.(AuthLibService).ListScore(cmd)
 }
+
+type LoginUserCommand struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+func (cmd *LoginUserCommand) Exec(svc interface{}) (interface{}, error) {
+	return svc.(AuthLibService).LoginUser(cmd)
+}
+
+type GetUserByUsernameAndPassword struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type LoginResponse struct {
+	UserId    string `json:"user_id"`
+	AccessKey string `json:"access_key"`
+}
+
+type CreateUserCommand struct {
+	Username  string `json:"username"`
+	Password  string `json:"password"`
+	Email     string `json:"email"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+}
+
+func (cmd *CreateUserCommand) Exec(svc interface{}) (interface{}, error) {
+	return svc.(AuthLibService).RegisterUser(cmd)
+}

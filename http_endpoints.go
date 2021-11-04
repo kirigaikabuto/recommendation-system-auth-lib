@@ -56,6 +56,52 @@ func (h *httpEndpoints) MakeListScoreEndpoint() func(w http.ResponseWriter, r *h
 	}
 }
 
+func (h *httpEndpoints) MakeLoginEndpoint() func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		setupResponse(&w, r)
+		cmd := &LoginUserCommand{}
+		dataBytes, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			respondJSON(w, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
+			return
+		}
+		err = json.Unmarshal(dataBytes, &cmd)
+		if err != nil {
+			respondJSON(w, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
+			return
+		}
+		response, err := h.ch.ExecCommand(cmd)
+		if err != nil {
+			respondJSON(w, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
+			return
+		}
+		respondJSON(w, http.StatusCreated, response)
+	}
+}
+
+func (h *httpEndpoints) MakeRegisterEndpoint() func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		setupResponse(&w, r)
+		cmd := &CreateUserCommand{}
+		dataBytes, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			respondJSON(w, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
+			return
+		}
+		err = json.Unmarshal(dataBytes, &cmd)
+		if err != nil {
+			respondJSON(w, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
+			return
+		}
+		response, err := h.ch.ExecCommand(cmd)
+		if err != nil {
+			respondJSON(w, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
+			return
+		}
+		respondJSON(w, http.StatusCreated, response)
+	}
+}
+
 func setupResponse(w *http.ResponseWriter, req *http.Request) {
 	(*w).Header().Set("Access-Control-Allow-Origin", "*")
 	(*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
