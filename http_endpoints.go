@@ -10,6 +10,9 @@ import (
 type HttpEndpoints interface {
 	MakeCreateScoreEndpoint() func(w http.ResponseWriter, r *http.Request)
 	MakeListScoreEndpoint() func(w http.ResponseWriter, r *http.Request)
+
+	MakeRegisterEndpoint() func(w http.ResponseWriter, r *http.Request)
+	MakeLoginEndpoint() func(w http.ResponseWriter, r *http.Request)
 }
 
 type httpEndpoints struct {
