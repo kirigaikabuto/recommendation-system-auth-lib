@@ -21,8 +21,8 @@ type authLibService struct {
 	userTokenStore redis.RedisConnectStore
 }
 
-func NewAuthLibService(a AmqpRequests) AuthLibService {
-	return &authLibService{amqpRequest: a}
+func NewAuthLibService(a AmqpRequests, u redis.RedisConnectStore) AuthLibService {
+	return &authLibService{amqpRequest: a, userTokenStore: u}
 }
 
 func (a *authLibService) CreateScore(cmd *CreateScoreCommand) (*score.Score, error) {
