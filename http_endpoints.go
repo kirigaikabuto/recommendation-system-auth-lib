@@ -16,6 +16,10 @@ type httpEndpoints struct {
 	ch setdata_common.CommandHandler
 }
 
+func NewHttpEndpoints(ch setdata_common.CommandHandler) HttpEndpoints {
+	return &httpEndpoints{ch: ch}
+}
+
 func (h *httpEndpoints) MakeCreateScoreEndpoint() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		setupResponse(&w, r)
