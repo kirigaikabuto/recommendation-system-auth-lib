@@ -54,7 +54,7 @@ func (r *AmqpRequests) GetUserByUsername(cmd *GetUserByUsernameAndPassword) (*us
 
 func (r *AmqpRequests) ListMovies(cmd *ListMoviesCommand) ([]movies.Movie, error) {
 	response := []movies.Movie{}
-	err := setdata_common.AmqpCall(r.clt, "movie.lists", cmd, &response)
+	err := setdata_common.AmqpCall(r.clt, "movie.list", cmd, &response)
 	if err != nil {
 		return nil, err
 	}

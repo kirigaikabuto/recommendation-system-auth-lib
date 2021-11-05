@@ -5,6 +5,7 @@ import (
 	setdata_common "github.com/kirigaikabuto/setdata-common"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 )
 
 type HttpEndpoints interface {
@@ -110,16 +111,13 @@ func (h *httpEndpoints) MakeListMovies() func(w http.ResponseWriter, r *http.Req
 	return func(w http.ResponseWriter, r *http.Request) {
 		setupResponse(&w, r)
 		cmd := &ListMoviesCommand{}
-		dataBytes, err := ioutil.ReadAll(r.Body)
+		countStr := r.Header.Get("count")
+		count, err := strconv.ParseInt(countStr, 10, 64)
 		if err != nil {
 			respondJSON(w, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
 			return
 		}
-		err = json.Unmarshal(dataBytes, &cmd)
-		if err != nil {
-			respondJSON(w, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
-			return
-		}
+		cmd.Count = count
 		response, err := h.ch.ExecCommand(cmd)
 		if err != nil {
 			respondJSON(w, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
