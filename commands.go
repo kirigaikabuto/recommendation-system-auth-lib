@@ -49,3 +49,11 @@ type CreateUserCommand struct {
 func (cmd *CreateUserCommand) Exec(svc interface{}) (interface{}, error) {
 	return svc.(AuthLibService).RegisterUser(cmd)
 }
+
+type ListMoviesCommand struct {
+	Count int64 `json:"count"`
+}
+
+func (cmd *ListMoviesCommand) Exec(svc interface{}) (interface{}, error) {
+	return svc.(AuthLibService).ListMovies(cmd)
+}

@@ -2,6 +2,7 @@ package recommendation_system_auth_lib
 
 import (
 	"github.com/google/uuid"
+	movies_lib "github.com/kirigaikabuto/recommendation-system-movie-store"
 	score "github.com/kirigaikabuto/recommendation-system-score-store"
 	users "github.com/kirigaikabuto/recommendation-system-users-store"
 	redis "github.com/kirigaikabuto/setdata-common/redis_connect"
@@ -14,6 +15,8 @@ type AuthLibService interface {
 
 	RegisterUser(cmd *CreateUserCommand) (*users.User, error)
 	LoginUser(cmd *LoginUserCommand) (*LoginResponse, error)
+
+	ListMovies(cmd *ListMoviesCommand) ([]movies_lib.Movie, error)
 }
 
 type authLibService struct {
@@ -52,4 +55,12 @@ func (a *authLibService) LoginUser(cmd *LoginUserCommand) (*LoginResponse, error
 		UserId:    user.Id,
 		AccessKey: accessKey,
 	}, nil
+}
+
+func (a *authLibService) ListMovies(cmd *ListMoviesCommand) ([]movies_lib.Movie, error) {
+	movies, err := a.amqpRequest.ListMovies(cmd)
+	if err != nil {
+		return nil, err
+	}
+	return movies, nil
 }

@@ -13,6 +13,7 @@ type HttpEndpoints interface {
 
 	MakeRegisterEndpoint() func(w http.ResponseWriter, r *http.Request)
 	MakeLoginEndpoint() func(w http.ResponseWriter, r *http.Request)
+	MakeListMovies() func(w http.ResponseWriter, r *http.Request)
 }
 
 type httpEndpoints struct {
@@ -55,7 +56,7 @@ func (h *httpEndpoints) MakeListScoreEndpoint() func(w http.ResponseWriter, r *h
 			respondJSON(w, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
 			return
 		}
-		respondJSON(w, http.StatusCreated, response)
+		respondJSON(w, http.StatusOK, response)
 	}
 }
 
@@ -78,7 +79,7 @@ func (h *httpEndpoints) MakeLoginEndpoint() func(w http.ResponseWriter, r *http.
 			respondJSON(w, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
 			return
 		}
-		respondJSON(w, http.StatusCreated, response)
+		respondJSON(w, http.StatusOK, response)
 	}
 }
 
@@ -102,6 +103,29 @@ func (h *httpEndpoints) MakeRegisterEndpoint() func(w http.ResponseWriter, r *ht
 			return
 		}
 		respondJSON(w, http.StatusCreated, response)
+	}
+}
+
+func (h *httpEndpoints) MakeListMovies() func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		setupResponse(&w, r)
+		cmd := &ListMoviesCommand{}
+		dataBytes, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			respondJSON(w, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
+			return
+		}
+		err = json.Unmarshal(dataBytes, &cmd)
+		if err != nil {
+			respondJSON(w, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
+			return
+		}
+		response, err := h.ch.ExecCommand(cmd)
+		if err != nil {
+			respondJSON(w, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
+			return
+		}
+		respondJSON(w, http.StatusOK, response)
 	}
 }
 

@@ -8,6 +8,7 @@ github.com/golang/protobuf v1.2.0/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5y
 github.com/google/uuid v1.3.0 h1:t6JiXgmwXMjEs8VusXIJk2BXHsn+wx8BZdTaoZ5fu7I=
 github.com/google/uuid v1.3.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/hpcloud/tail v1.0.0/go.mod h1:ab1qPbhIpdTxEkNHXyeSf5vhxWSCs/tWer42PpOxQnU=
+github.com/kirigaikabuto/recommendation-system-movie-store v0.0.0-20211104103424-e1a72c7b635f/go.mod h1:RLEbCI9YiFH5E5JIAhU5wtmgtDzNASHNTScJIui1Y4s=
 github.com/kirigaikabuto/recommendation-system-score-store v0.0.0-20211104112242-1f62f5f6a39f h1:+FMFqhNIEL8OWOkJsHQtM9QcZoaG7ZyD+d9UbIci1bw=
 github.com/kirigaikabuto/recommendation-system-score-store v0.0.0-20211104112242-1f62f5f6a39f/go.mod h1:MjCKFjvg7bvOaHT66cZmVymiAa083WqkXNpk902aYcQ=
 github.com/kirigaikabuto/recommendation-system-users-store v0.0.0-20211104093000-b47fccd82921 h1:vOuKju8dDefhEceZimUo8nV+YgRwfeO9g7bGccyykTI=
