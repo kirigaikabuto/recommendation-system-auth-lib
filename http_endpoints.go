@@ -111,7 +111,7 @@ func (h *httpEndpoints) MakeListMovies() func(w http.ResponseWriter, r *http.Req
 	return func(w http.ResponseWriter, r *http.Request) {
 		setupResponse(&w, r)
 		cmd := &ListMoviesCommand{}
-		countStr := r.Header.Get("count")
+		countStr := r.URL.Query().Get("count")
 		count, err := strconv.ParseInt(countStr, 10, 64)
 		if err != nil {
 			respondJSON(w, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
