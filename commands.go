@@ -77,3 +77,8 @@ type FilteredMovie struct {
 type GetMovieById struct {
 	Id int64 `json:"id"`
 }
+
+type CollaborativeFilteringResponse struct {
+	Current           *movies_lib.Movie `json:"current"`
+	RecommendedMovies []FilteredMovie   `json:"recommended_movies"`
+}
