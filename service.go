@@ -1,12 +1,10 @@
 package recommendation_system_auth_lib
 
 import (
-	"github.com/google/uuid"
+	"github.com/kirigaikabuto/recommendation-system-auth-lib/auth"
 	movies_lib "github.com/kirigaikabuto/recommendation-system-movie-store"
 	score "github.com/kirigaikabuto/recommendation-system-score-store"
 	users "github.com/kirigaikabuto/recommendation-system-users-store"
-	redis "github.com/kirigaikabuto/setdata-common/redis_connect"
-	"time"
 )
 
 type AuthLibService interface {
@@ -21,10 +19,10 @@ type AuthLibService interface {
 
 type authLibService struct {
 	amqpRequest    AmqpRequests
-	userTokenStore redis.RedisConnectStore
+	userTokenStore auth.TokenStore
 }
 
-func NewAuthLibService(a AmqpRequests, u redis.RedisConnectStore) AuthLibService {
+func NewAuthLibService(a AmqpRequests, u auth.TokenStore) AuthLibService {
 	return &authLibService{amqpRequest: a, userTokenStore: u}
 }
 
@@ -45,15 +43,13 @@ func (a *authLibService) LoginUser(cmd *LoginUserCommand) (*LoginResponse, error
 	if err != nil {
 		return nil, err
 	}
-	uuId := uuid.New()
-	accessKey := uuId.String()
-	err = a.userTokenStore.Save(accessKey, user.Id, 5*time.Minute)
+	tokenDetails, err := a.userTokenStore.CreateToken(user.Id)
 	if err != nil {
 		return nil, err
 	}
 	return &LoginResponse{
 		UserId:    user.Id,
-		AccessKey: accessKey,
+		AccessKey: tokenDetails.AccessToken,
 	}, nil
 }
 
