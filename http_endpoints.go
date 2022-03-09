@@ -2,6 +2,8 @@ package recommendation_system_auth_lib
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	setdata_common "github.com/kirigaikabuto/setdata-common"
 	"io/ioutil"
@@ -16,6 +18,8 @@ type HttpEndpoints interface {
 	MakeRegisterEndpoint() gin.HandlerFunc
 	MakeLoginEndpoint() gin.HandlerFunc
 	MakeListMovies() gin.HandlerFunc
+
+	MakeListCollaborativeFiltering() gin.HandlerFunc
 }
 
 type httpEndpoints struct {
@@ -114,6 +118,33 @@ func (h *httpEndpoints) MakeListMovies() gin.HandlerFunc {
 			return
 		}
 		cmd.Count = count
+		response, err := h.ch.ExecCommand(cmd)
+		if err != nil {
+			respondJSON(context.Writer, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
+			return
+		}
+		respondJSON(context.Writer, http.StatusOK, response)
+	}
+}
+
+func (h *httpEndpoints) MakeListCollaborativeFiltering() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		cmd := &ListCollaborativeFilteringCommand{}
+		userId, ok := context.Get("user_id")
+		if !ok {
+			respondJSON(context.Writer, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(errors.New("no user id")))
+			return
+
+		}
+		fmt.Println(userId)
+		movieIdStr := context.Request.URL.Query().Get("id")
+		movieId, err := strconv.ParseInt(movieIdStr, 10, 64)
+		if err != nil {
+			respondJSON(context.Writer, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
+			return
+		}
+		cmd.MovieId = int32(movieId)
+		cmd.UserId = string(movieId)
 		response, err := h.ch.ExecCommand(cmd)
 		if err != nil {
 			respondJSON(context.Writer, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
