@@ -74,7 +74,7 @@ func (a *authLibService) ListCollaborativeFiltering(cmd *ListCollaborativeFilter
 	}
 	movies := []FilteredMovie{}
 	for _, v := range resp.Movies {
-		movie, err := a.amqpRequest.GetMovieById(&GetMovieById{Id: v.MovieId})
+		movie, err := a.amqpRequest.GetMovieById(&GetMovieById{Id: int64(v.MovieId)})
 		if err != nil {
 			return nil, err
 		}

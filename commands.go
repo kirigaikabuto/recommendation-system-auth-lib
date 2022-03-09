@@ -75,5 +75,5 @@ type FilteredMovie struct {
 }
 
 type GetMovieById struct {
-	Id int32 `json:"id"`
+	Id int64 `json:"id"`
 }
