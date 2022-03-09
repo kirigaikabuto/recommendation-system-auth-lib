@@ -110,6 +110,9 @@ func (h *httpEndpoints) MakeRegisterEndpoint() gin.HandlerFunc {
 
 func (h *httpEndpoints) MakeListMovies() gin.HandlerFunc {
 	return func(context *gin.Context) {
+		(context.Writer).Header().Set("Access-Control-Allow-Origin", "*")
+		(context.Writer).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+		(context.Writer).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, Access-Control-Allow-Origin")
 		cmd := &ListMoviesCommand{}
 		countStr := context.Request.URL.Query().Get("count")
 		count, err := strconv.ParseInt(countStr, 10, 64)
