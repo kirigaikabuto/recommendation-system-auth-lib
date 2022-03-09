@@ -1,5 +1,7 @@
 package recommendation_system_auth_lib
 
+import movies_lib "github.com/kirigaikabuto/recommendation-system-movie-store"
+
 type CreateScoreCommand struct {
 	UserId  string  `json:"user_id"`
 	MovieId int64   `json:"movie_id"`
@@ -58,16 +60,20 @@ func (cmd *ListMoviesCommand) Exec(svc interface{}) (interface{}, error) {
 	return svc.(AuthLibService).ListMovies(cmd)
 }
 
-type ListCollaborativeFiltering struct {
+type ListCollaborativeFilteringCommand struct {
 	UserId  string `json:"user_id"`
 	MovieId int32  `json:"movie_id"`
 }
 
-func (cmd *ListCollaborativeFiltering) Exec(svc interface{}) (interface{}, error) {
+func (cmd *ListCollaborativeFilteringCommand) Exec(svc interface{}) (interface{}, error) {
 	return svc.(AuthLibService).ListCollaborativeFiltering(cmd)
 }
 
 type FilteredMovie struct {
-	Id              int32   `json:"id"`
+	movies_lib.Movie
 	PredictedRating float32 `json:"predicted_rating"`
+}
+
+type GetMovieById struct {
+	Id int32 `json:"id"`
 }

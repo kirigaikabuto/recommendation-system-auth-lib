@@ -60,3 +60,12 @@ func (r *AmqpRequests) ListMovies(cmd *ListMoviesCommand) ([]movies.Movie, error
 	}
 	return response, nil
 }
+
+func (r *AmqpRequests) GetMovieById(cmd *GetMovieById) (*movies.Movie, error) {
+	response := &movies.Movie{}
+	err := setdata_common.AmqpCall(r.clt, "movie.get", cmd, &response)
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}

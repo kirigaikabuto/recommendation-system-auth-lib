@@ -18,7 +18,7 @@ type AuthLibService interface {
 
 	ListMovies(cmd *ListMoviesCommand) ([]movies_lib.Movie, error)
 
-	ListCollaborativeFiltering(cmd *ListCollaborativeFiltering) ([]FilteredMovie, error)
+	ListCollaborativeFiltering(cmd *ListCollaborativeFilteringCommand) ([]FilteredMovie, error)
 }
 
 type authLibService struct {
@@ -66,7 +66,7 @@ func (a *authLibService) ListMovies(cmd *ListMoviesCommand) ([]movies_lib.Movie,
 	return movies, nil
 }
 
-func (a *authLibService) ListCollaborativeFiltering(cmd *ListCollaborativeFiltering) ([]FilteredMovie, error) {
+func (a *authLibService) ListCollaborativeFiltering(cmd *ListCollaborativeFilteringCommand) ([]FilteredMovie, error) {
 	resp, err := a.grpcClient.Recommendation(context.Background(),
 		&protos2.RecRequest{UserId: cmd.UserId, MovieId: cmd.MovieId})
 	if err != nil {
@@ -74,10 +74,14 @@ func (a *authLibService) ListCollaborativeFiltering(cmd *ListCollaborativeFilter
 	}
 	movies := []FilteredMovie{}
 	for _, v := range resp.Movies {
-		movies = append(movies, FilteredMovie{
-			Id:              v.MovieId,
-			PredictedRating: v.PredictedRating,
-		})
+		movie, err := a.amqpRequest.GetMovieById(&GetMovieById{Id: v.MovieId})
+		if err != nil {
+			return nil, err
+		}
+		tmp := FilteredMovie{}
+		tmp.Movie = *movie
+		tmp.PredictedRating = v.PredictedRating
+		movies = append(movies, tmp)
 	}
 	return movies, nil
 }

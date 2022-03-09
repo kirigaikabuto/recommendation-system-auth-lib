@@ -8,7 +8,7 @@ require (
 	github.com/gin-gonic/gin v1.7.7
 	github.com/go-redis/redis v0.0.0-20190803144825-742f3ccb21cd
 	github.com/google/uuid v1.3.0
-	github.com/kirigaikabuto/RecommendationSystemPythonApi v0.0.0-20220309154312-a1b713b5dcac // indirect
+	github.com/kirigaikabuto/RecommendationSystemPythonApi v0.0.0-20220309154312-a1b713b5dcac
 	github.com/kirigaikabuto/recommendation-system-movie-store v0.0.0-20211104103424-e1a72c7b635f
 	github.com/kirigaikabuto/recommendation-system-score-store v0.0.0-20211104112242-1f62f5f6a39f
 	github.com/kirigaikabuto/recommendation-system-users-store v0.0.0-20211104134418-ec5d221bfcf4
