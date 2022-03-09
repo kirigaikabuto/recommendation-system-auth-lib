@@ -2,6 +2,7 @@ package recommendation_system_auth_lib
 
 import (
 	"encoding/json"
+	"github.com/gin-gonic/gin"
 	setdata_common "github.com/kirigaikabuto/setdata-common"
 	"io/ioutil"
 	"net/http"
@@ -9,12 +10,12 @@ import (
 )
 
 type HttpEndpoints interface {
-	MakeCreateScoreEndpoint() func(w http.ResponseWriter, r *http.Request)
-	MakeListScoreEndpoint() func(w http.ResponseWriter, r *http.Request)
+	MakeCreateScoreEndpoint() gin.HandlerFunc
+	MakeListScoreEndpoint() gin.HandlerFunc
 
-	MakeRegisterEndpoint() func(w http.ResponseWriter, r *http.Request)
-	MakeLoginEndpoint() func(w http.ResponseWriter, r *http.Request)
-	MakeListMovies() func(w http.ResponseWriter, r *http.Request)
+	MakeRegisterEndpoint() gin.HandlerFunc
+	MakeLoginEndpoint() gin.HandlerFunc
+	MakeListMovies() gin.HandlerFunc
 }
 
 type httpEndpoints struct {
@@ -25,112 +26,101 @@ func NewHttpEndpoints(ch setdata_common.CommandHandler) HttpEndpoints {
 	return &httpEndpoints{ch: ch}
 }
 
-func (h *httpEndpoints) MakeCreateScoreEndpoint() func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		setupResponse(&w, r)
+func (h *httpEndpoints) MakeCreateScoreEndpoint() gin.HandlerFunc {
+	return func(context *gin.Context) {
 		cmd := &CreateScoreCommand{}
-		dataBytes, err := ioutil.ReadAll(r.Body)
+		dataBytes, err := ioutil.ReadAll(context.Request.Body)
 		if err != nil {
-			respondJSON(w, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
+			respondJSON(context.Writer, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
 			return
 		}
 		err = json.Unmarshal(dataBytes, &cmd)
 		if err != nil {
-			respondJSON(w, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
+			respondJSON(context.Writer, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
 			return
 		}
 		response, err := h.ch.ExecCommand(cmd)
 		if err != nil {
-			respondJSON(w, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
+			respondJSON(context.Writer, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
 			return
 		}
-		respondJSON(w, http.StatusCreated, response)
+		respondJSON(context.Writer, http.StatusCreated, response)
 	}
 }
 
-func (h *httpEndpoints) MakeListScoreEndpoint() func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		setupResponse(&w, r)
+func (h *httpEndpoints) MakeListScoreEndpoint() gin.HandlerFunc {
+	return func(context *gin.Context) {
 		cmd := &ListScoreCommand{}
 		response, err := h.ch.ExecCommand(cmd)
 		if err != nil {
-			respondJSON(w, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
+			respondJSON(context.Writer, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
 			return
 		}
-		respondJSON(w, http.StatusOK, response)
+		respondJSON(context.Writer, http.StatusOK, response)
 	}
 }
 
-func (h *httpEndpoints) MakeLoginEndpoint() func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		setupResponse(&w, r)
+func (h *httpEndpoints) MakeLoginEndpoint() gin.HandlerFunc {
+	return func(context *gin.Context) {
 		cmd := &LoginUserCommand{}
-		dataBytes, err := ioutil.ReadAll(r.Body)
+		dataBytes, err := ioutil.ReadAll(context.Request.Body)
 		if err != nil {
-			respondJSON(w, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
+			respondJSON(context.Writer, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
 			return
 		}
 		err = json.Unmarshal(dataBytes, &cmd)
 		if err != nil {
-			respondJSON(w, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
+			respondJSON(context.Writer, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
 			return
 		}
 		response, err := h.ch.ExecCommand(cmd)
 		if err != nil {
-			respondJSON(w, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
+			respondJSON(context.Writer, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
 			return
 		}
-		respondJSON(w, http.StatusOK, response)
+		respondJSON(context.Writer, http.StatusOK, response)
 	}
 }
 
-func (h *httpEndpoints) MakeRegisterEndpoint() func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		setupResponse(&w, r)
+func (h *httpEndpoints) MakeRegisterEndpoint() gin.HandlerFunc {
+	return func(context *gin.Context) {
 		cmd := &CreateUserCommand{}
-		dataBytes, err := ioutil.ReadAll(r.Body)
+		dataBytes, err := ioutil.ReadAll(context.Request.Body)
 		if err != nil {
-			respondJSON(w, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
+			respondJSON(context.Writer, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
 			return
 		}
 		err = json.Unmarshal(dataBytes, &cmd)
 		if err != nil {
-			respondJSON(w, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
+			respondJSON(context.Writer, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
 			return
 		}
 		response, err := h.ch.ExecCommand(cmd)
 		if err != nil {
-			respondJSON(w, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
+			respondJSON(context.Writer, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
 			return
 		}
-		respondJSON(w, http.StatusCreated, response)
+		respondJSON(context.Writer, http.StatusCreated, response)
 	}
 }
 
-func (h *httpEndpoints) MakeListMovies() func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		setupResponse(&w, r)
+func (h *httpEndpoints) MakeListMovies() gin.HandlerFunc {
+	return func(context *gin.Context) {
 		cmd := &ListMoviesCommand{}
-		countStr := r.URL.Query().Get("count")
+		countStr := context.Request.URL.Query().Get("count")
 		count, err := strconv.ParseInt(countStr, 10, 64)
 		if err != nil {
-			respondJSON(w, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
+			respondJSON(context.Writer, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
 			return
 		}
 		cmd.Count = count
 		response, err := h.ch.ExecCommand(cmd)
 		if err != nil {
-			respondJSON(w, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
+			respondJSON(context.Writer, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
 			return
 		}
-		respondJSON(w, http.StatusOK, response)
+		respondJSON(context.Writer, http.StatusOK, response)
 	}
-}
-
-func setupResponse(w *http.ResponseWriter, req *http.Request) {
-	(*w).Header().Set("Access-Control-Allow-Origin", "*")
-	(*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-	(*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, Access-Control-Allow-Origin")
 }
 
 func respondJSON(w http.ResponseWriter, status int, payload interface{}) {
