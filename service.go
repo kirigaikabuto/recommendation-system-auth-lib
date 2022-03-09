@@ -1,6 +1,8 @@
 package recommendation_system_auth_lib
 
 import (
+	"context"
+	protos2 "github.com/kirigaikabuto/RecommendationSystemPythonApi/protos"
 	"github.com/kirigaikabuto/recommendation-system-auth-lib/auth"
 	movies_lib "github.com/kirigaikabuto/recommendation-system-movie-store"
 	score "github.com/kirigaikabuto/recommendation-system-score-store"
@@ -15,15 +17,18 @@ type AuthLibService interface {
 	LoginUser(cmd *LoginUserCommand) (*LoginResponse, error)
 
 	ListMovies(cmd *ListMoviesCommand) ([]movies_lib.Movie, error)
+
+	ListCollaborativeFiltering(cmd *ListCollaborativeFiltering) ([]FilteredMovie, error)
 }
 
 type authLibService struct {
 	amqpRequest    AmqpRequests
 	userTokenStore auth.TokenStore
+	grpcClient     protos2.GreeterClient
 }
 
-func NewAuthLibService(a AmqpRequests, u auth.TokenStore) AuthLibService {
-	return &authLibService{amqpRequest: a, userTokenStore: u}
+func NewAuthLibService(a AmqpRequests, u auth.TokenStore, g protos2.GreeterClient) AuthLibService {
+	return &authLibService{amqpRequest: a, userTokenStore: u, grpcClient: g}
 }
 
 func (a *authLibService) CreateScore(cmd *CreateScoreCommand) (*score.Score, error) {
@@ -57,6 +62,22 @@ func (a *authLibService) ListMovies(cmd *ListMoviesCommand) ([]movies_lib.Movie,
 	movies, err := a.amqpRequest.ListMovies(cmd)
 	if err != nil {
 		return nil, err
+	}
+	return movies, nil
+}
+
+func (a *authLibService) ListCollaborativeFiltering(cmd *ListCollaborativeFiltering) ([]FilteredMovie, error) {
+	resp, err := a.grpcClient.Recommendation(context.Background(),
+		&protos2.RecRequest{UserId: cmd.UserId, MovieId: cmd.MovieId})
+	if err != nil {
+		return nil, err
+	}
+	movies := []FilteredMovie{}
+	for _, v := range resp.Movies {
+		movies = append(movies, FilteredMovie{
+			Id:              v.MovieId,
+			PredictedRating: v.PredictedRating,
+		})
 	}
 	return movies, nil
 }

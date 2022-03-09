@@ -57,3 +57,17 @@ type ListMoviesCommand struct {
 func (cmd *ListMoviesCommand) Exec(svc interface{}) (interface{}, error) {
 	return svc.(AuthLibService).ListMovies(cmd)
 }
+
+type ListCollaborativeFiltering struct {
+	UserId  string `json:"user_id"`
+	MovieId int32  `json:"movie_id"`
+}
+
+func (cmd *ListCollaborativeFiltering) Exec(svc interface{}) (interface{}, error) {
+	return svc.(AuthLibService).ListCollaborativeFiltering(cmd)
+}
+
+type FilteredMovie struct {
+	Id              int32   `json:"id"`
+	PredictedRating float32 `json:"predicted_rating"`
+}
