@@ -83,3 +83,12 @@ type CollaborativeFilteringResponse struct {
 	Current           *movies_lib.Movie `json:"current"`
 	RecommendedMovies []FilteredMovie   `json:"recommended_movies"`
 }
+
+type ListContentBasedFilteringCommand struct {
+	MovieId int32 `json:"movie_id"`
+	Count   int32 `json:"count"`
+}
+
+func (cmd *ListContentBasedFilteringCommand) Exec(svc interface{}) (interface{}, error) {
+	return svc.(AuthLibService).ListContentBasedFiltering(cmd)
+}

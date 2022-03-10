@@ -20,6 +20,7 @@ type HttpEndpoints interface {
 	MakeListMovies() gin.HandlerFunc
 
 	MakeListCollaborativeFiltering() gin.HandlerFunc
+	MakeContentBasedFiltering() gin.HandlerFunc
 }
 
 type httpEndpoints struct {
@@ -156,6 +157,40 @@ func (h *httpEndpoints) MakeListCollaborativeFiltering() gin.HandlerFunc {
 		}
 		cmd.Count = int32(count)
 		cmd.UserId = userId.(string)
+		response, err := h.ch.ExecCommand(cmd)
+		if err != nil {
+			respondJSON(context.Writer, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
+			return
+		}
+		respondJSON(context.Writer, http.StatusOK, response)
+	}
+}
+
+func (h *httpEndpoints) MakeContentBasedFiltering() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		cmd := &ListContentBasedFilteringCommand{}
+		userId, ok := context.Get("user_id")
+		if !ok {
+			respondJSON(context.Writer, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(errors.New("no user id")))
+			return
+
+		}
+		fmt.Println(userId)
+		movieIdStr := context.Request.URL.Query().Get("id")
+		movieId, err := strconv.ParseInt(movieIdStr, 10, 64)
+		if err != nil {
+			respondJSON(context.Writer, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
+			return
+		}
+		cmd.MovieId = int32(movieId)
+
+		countStr := context.Request.URL.Query().Get("count")
+		count, err := strconv.ParseInt(countStr, 10, 64)
+		if err != nil {
+			respondJSON(context.Writer, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))
+			return
+		}
+		cmd.Count = int32(count)
 		response, err := h.ch.ExecCommand(cmd)
 		if err != nil {
 			respondJSON(context.Writer, http.StatusInternalServerError, setdata_common.ErrToHttpResponse(err))

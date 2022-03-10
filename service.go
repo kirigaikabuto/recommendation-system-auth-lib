@@ -19,6 +19,7 @@ type AuthLibService interface {
 	ListMovies(cmd *ListMoviesCommand) ([]movies_lib.Movie, error)
 
 	ListCollaborativeFiltering(cmd *ListCollaborativeFilteringCommand) (*CollaborativeFilteringResponse, error)
+	ListContentBasedFiltering(cmd *ListContentBasedFilteringCommand) (*CollaborativeFilteringResponse, error)
 }
 
 type authLibService struct {
@@ -67,8 +68,32 @@ func (a *authLibService) ListMovies(cmd *ListMoviesCommand) ([]movies_lib.Movie,
 }
 
 func (a *authLibService) ListCollaborativeFiltering(cmd *ListCollaborativeFilteringCommand) (*CollaborativeFilteringResponse, error) {
-	resp, err := a.grpcClient.Recommendation(context.Background(),
+	resp, err := a.grpcClient.CollaborativeRecommendation(context.Background(),
 		&protos2.RecRequest{UserId: cmd.UserId, MovieId: cmd.MovieId, Count: cmd.Count})
+	if err != nil {
+		return nil, err
+	}
+	movies := []FilteredMovie{}
+	for _, v := range resp.Movies {
+		movie, err := a.amqpRequest.GetMovieById(&GetMovieById{Id: int64(v.MovieId)})
+		if err != nil {
+			return nil, err
+		}
+		tmp := FilteredMovie{}
+		tmp.Movie = *movie
+		tmp.PredictedRating = v.PredictedRating
+		movies = append(movies, tmp)
+	}
+	current, err := a.amqpRequest.GetMovieById(&GetMovieById{Id: int64(cmd.MovieId)})
+	if err != nil {
+		return nil, err
+	}
+	return &CollaborativeFilteringResponse{RecommendedMovies: movies, Current: current}, nil
+}
+
+func (a *authLibService) ListContentBasedFiltering(cmd *ListContentBasedFilteringCommand) (*CollaborativeFilteringResponse, error) {
+	resp, err := a.grpcClient.ContentBasedRecommendation(context.Background(),
+		&protos2.RecRequest{MovieId: cmd.MovieId, Count: cmd.Count})
 	if err != nil {
 		return nil, err
 	}
