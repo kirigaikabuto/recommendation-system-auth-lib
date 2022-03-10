@@ -63,6 +63,7 @@ func (cmd *ListMoviesCommand) Exec(svc interface{}) (interface{}, error) {
 type ListCollaborativeFilteringCommand struct {
 	UserId  string `json:"user_id"`
 	MovieId int32  `json:"movie_id"`
+	Count   int32  `json:"count"`
 }
 
 func (cmd *ListCollaborativeFilteringCommand) Exec(svc interface{}) (interface{}, error) {

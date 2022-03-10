@@ -68,7 +68,7 @@ func (a *authLibService) ListMovies(cmd *ListMoviesCommand) ([]movies_lib.Movie,
 
 func (a *authLibService) ListCollaborativeFiltering(cmd *ListCollaborativeFilteringCommand) (*CollaborativeFilteringResponse, error) {
 	resp, err := a.grpcClient.Recommendation(context.Background(),
-		&protos2.RecRequest{UserId: cmd.UserId, MovieId: cmd.MovieId})
+		&protos2.RecRequest{UserId: cmd.UserId, MovieId: cmd.MovieId, Count: cmd.Count})
 	if err != nil {
 		return nil, err
 	}
